@@ -108,10 +108,27 @@ console.log("user1", user1);
 
 class Animal {
   constructor(name, location, age) {
+    if (new.target === Animal) {
+      throw new Error("Cannot instantiate abstract class Animal directly.");
+    }
     this.name = name;
-    this.age = age;
     this.location = location;
+    this.age = age;
   }
+
+  set age(value) {
+    if (typeof value !== "number") {
+      throw new TypeError("Age must be a number");
+    }
+    if (value < 0) {
+      throw new RangeError("Age has to be a positive number.");
+    }
+    this._age = value;
+  }
+  get age() {
+    return this._age;
+  }
+
   hunting() {
     console.log("зараз дожену здобич");
   }
@@ -133,13 +150,21 @@ class Tiger extends Animal {
   }
 }
 
-const tiger1 = new Tiger("India", 5);
-console.log("tiger1", tiger1);
-tiger1.hunting();
+// Testing Tiger 1
+try {
+  const tiger1 = new Tiger("India", -1);
+  tiger1.growl();
+} catch (error) {
+  console.log(`${error.name}: ${error.message}`);
+}
 
-const tiger2 = new Tiger("China", 7);
-console.log("tiger2", tiger2);
-tiger2.growl();
+// Testing Tiger 2
+try {
+  const tiger2 = new Tiger("China", "three");
+  tiger2.growl();
+} catch (error) {
+  console.log(`${error.name}: ${error.message}`);
+}
 
 // Wolf:
 class Wolf extends Animal {
@@ -154,10 +179,25 @@ class Wolf extends Animal {
   }
 }
 
-const wolf1 = new Wolf("Ukraine", 4);
-console.log("wolf1", wolf1);
-wolf1.growl();
+// Testing Wolf 1
+try {
+  const wolf1 = new Wolf("Ukraine", 4);
+  wolf1.growl();
+} catch (error) {
+  console.log(`${error.name}: ${error.message}`);
+}
 
-const wolf2 = new Wolf("Canada", 2);
-console.log("wolf2", wolf2);
-wolf2.hunting();
+// Testing Wolf 2
+try {
+  const wolf2 = new Wolf("Canada", 5);
+  wolf2.hunting();
+} catch (error) {
+  console.log(`${error.name}: ${error.message}`);
+}
+
+// Testing Animal
+try {
+  const generic = new Animal("Generic", "Wild", 5);
+} catch (error) {
+  console.log(`${error.name}: ${error.message}`);
+}
