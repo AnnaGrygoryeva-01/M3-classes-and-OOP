@@ -29,21 +29,61 @@ class Book {
     this.shelfNum = shelfNum;
     this.userID = userID;
   }
+
+  set year(value) {
+    if (typeof value !== "number") {
+      throw new TypeError("Year of publication must be a number");
+    }
+    if (value > new Date().getFullYear()) {
+      throw new RangeError("Invalid year of publication");
+    }
+    this._year = value;
+  }
+  get year() {
+    return this._year;
+  }
+
+  set pagesNum(value) {
+    if (typeof value !== "number") {
+      throw new TypeError("Pages number must be a number");
+    }
+    if (value <= 0) {
+      throw new RangeError("Pages number must be a positive number");
+    }
+    this._pagesNum = value;
+  }
+  get pagesNum() {
+    return this._pagesNum;
+  }
+
   isVacant() {
-    return this.shelfNum != null;
+    return this.shelfNum !== null && this.userID === null;
   }
   getRent(id) {
-    this.shelfNum == null;
+    if (!this.isVacant()) {
+      throw new Error(`The book "${this.title}" is already taken.`);
+    }
+    this.shelfNum = null;
     this.userID = id;
+    console.log(`Book "${this.title}" rented to user ${id}`);
   }
 }
 
-const book1 = new Book("Jane Austen", "Pride and Prejudice", 1813, 304, 45);
-console.log("book1", book1);
-console.log(book1.isVacant());
-book1.getRent(3400);
-console.log(book1.isVacant());
-console.log("book1", book1);
+try {
+  const book1 = new Book("Jane Austen", "Pride and Prejudice", 1813, 304, 45);
+  console.log("book1.isVacant", book1.isVacant());
+  book1.getRent(3400);
+} catch (error) {
+  console.log(`${error.name}: ${error.message}`);
+}
+
+try {
+  const book1 = new Book("Jane Austen", "Pride and Prejudice", 1813, -2, 45);
+  console.log("book1.isVacant", book1.isVacant());
+  book1.getRent(3400);
+} catch (error) {
+  console.log(`${error.name}: ${error.message}`);
+}
 
 // User:
 class User {
